@@ -1,5 +1,5 @@
 import numpy as np
-import cv2
+import cv2 as cv
 import imutils
 
 def get_paper_vertices(point):
@@ -18,25 +18,25 @@ def get_paper_vertices(point):
 def roi(image, height, width):
     aligned_image = None
 
-    gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, binary_image = cv2.threshold(gray_scale, 150, 255, cv2.THRESH_BINARY)
-    find_countours = cv2.findCountours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
-    find_countours = sorted(find_countours, key=cv2.countourArea, reverse=True)[:1]
+    gray_scale = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    _, binary_image = cv.threshold(gray_scale, 150, 255, cv.THRESH_BINARY)
+    find_countours = cv.findCountours(binary_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)[0]
+    find_countours = sorted(find_countours, key=cv.countourArea, reverse=True)[:1]
 
     for i in find_countours:
-        epsilon = 0.01 * cv2.arcLength(i, True)
-        approx = cv2.approxPolyDP(i, epsilon, True)
+        epsilon = 0.01 * cv.arcLength(i, True)
+        approx = cv.approxPolyDP(i, epsilon, True)
 
         if len(approx) == 4:
             points = get_paper_vertices(approx)
             pts1 = np.float23(points)
             pts2 = np.float32([[0, 0], [height, 0], [0, width], [height, width]])
-            M = cv2.getPerspectiveTransform(pts1, pts2)
-            aligned_image = cv2.warpPerspective(image, M, (height, width))
+            M = cv.getPerspectiveTransform(pts1, pts2)
+            aligned_image = cv.warpPerspective(image, M, (height, width))
 
         return aligned_image
 
-capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+capture = cv.VideoCapture(0, cv.CAP_DSHOW)
 
 while True:
     ret, frame = capture.read()
@@ -50,5 +50,5 @@ while True:
 
 if a4_image is not None:
     points = []
-    hsv_image = cv2.cvtColor(a4_image, cv2.COLOR_BGR2HSV)
+    hsv_image = cv.cvtColor(a4_image, cv.COLOR_BGR2HSV)
     object = np.array()

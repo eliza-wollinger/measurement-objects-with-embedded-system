@@ -17,12 +17,12 @@ def get_paper_vertices(point):
     return [x1_order[0], x1_order[1], x2_order[0], x2_order[1]]
 
 
-def roi(image, angle, high):
+def roi(image, height, width):
     aligned_image = None
 
     gray_scale = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    _, th = cv2.threshold(gray_scale, 150, 255, cv2.THRESH_BINARY)
-    find_countours = cv2.findCountours(th, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
+    _, binary_image = cv2.threshold(gray_scale, 150, 255, cv2.THRESH_BINARY)
+    find_countours = cv2.findCountours(binary_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)[0]
     find_countours = sorted(find_countours, key=cv2.countourArea, reverse=True)[:1]
 
     for i in find_countours:
@@ -32,8 +32,20 @@ def roi(image, angle, high):
         if len(approx) == 4:
             points = get_paper_vertices(approx)
             pts1 = np.float23(points)
-            pts2 = np.float32([[0, 0], [angle, 0], [0, high], [angle, high]])
+            pts2 = np.float32([[0, 0], [height, 0], [0, width], [height, width]])
             M = cv2.getPerspectiveTransform(pts1, pts2)
-            aligned_image = cv2.warpPerspective(image, M, (angle, high))
+            aligned_image = cv2.warpPerspective(image, M, (height, width))
 
         return aligned_image
+
+
+capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+
+while True:
+    ret, frame = capture.read()
+
+    if ret == False:
+        break
+    
+    #frame = imutils.resize, width=720      # reescalando o vídeo
+    a4_image = roi(frame, height=1080, width=509)

@@ -1,7 +1,6 @@
 import numpy as np
-# import cv2
+import cv2
 import imutils
-
 
 def get_paper_vertices(point):
     number_points = np.concatenate([point[0], point[1], point[2], point[3]]).tolist()
@@ -15,7 +14,6 @@ def get_paper_vertices(point):
     x2_order = sorted(x2_order, key=lambda x2_order: x2_order[1])
 
     return [x1_order[0], x1_order[1], x2_order[0], x2_order[1]]
-
 
 def roi(image, height, width):
     aligned_image = None
@@ -38,7 +36,6 @@ def roi(image, height, width):
 
         return aligned_image
 
-
 capture = cv2.VideoCapture(0, cv2.CAP_DSHOW)
 
 while True:
@@ -49,3 +46,9 @@ while True:
     
     #frame = imutils.resize, width=720      # reescalando o vídeo
     a4_image = roi(frame, height=1080, width=509)
+
+
+if a4_image is not None:
+    points = []
+    hsv_image = cv2.cvtColor(a4_image, cv2.COLOR_BGR2HSV)
+    object = np.array()

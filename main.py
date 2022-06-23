@@ -35,7 +35,7 @@ def roi(image, height, width):
             aligned_image = cv.warpPerspective(image, M, (height, width))
 
         return aligned_image
-
+        
 capture = cv.VideoCapture(0, cv.CAP_DSHOW)
 
 while True:
